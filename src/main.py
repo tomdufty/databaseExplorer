@@ -1,4 +1,4 @@
-from PyQt5 import QtGui, QtWidgets # Import the PyQt4 module we'll need
+from PyQt5 import QtGui,QtCore, QtWidgets # Import the PyQt4 module we'll need
 import sys # We need sys so that we can pass argv to QApplication
 
 import mainWindow # This file holds our MainWindow and all design related things
@@ -21,7 +21,11 @@ def main():
           # and execute the app
     for entry in entrys:
         form.MainList.insertRow(0)
-        form.MainList.setItem(0,1,QtWidgets.QTableWidgetItem(entry[1])) # access table and
+        form.MainList.setItem(0,1,QtWidgets.QTableWidgetItem(entry[1]))
+        chkBoxItem = QtWidgets.QTableWidgetItem()
+        chkBoxItem.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+        chkBoxItem.setCheckState(QtCore.Qt.Unchecked)
+        form.MainList.setItem(0,0,chkBoxItem)# access table and
     form.show()                         # Show the form
     app.exec_()
 
