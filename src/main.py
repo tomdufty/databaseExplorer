@@ -35,20 +35,41 @@ class importWin(QtWidgets.QMainWindow, importWindow_ui.Ui_Form):
 
     def populate_table(self,tabledata):
         print("populating table")
+        self.importTable.insertColumn(0) #add first column for checkboxes
+        self.importTable.insertRow(0)   #add first row for comboboxes
+        headeroptions = ['Description','Category','Sub-Category','Quality','Group','Model','Reference','Parameter',
+                         'Comments', 'Approved', 'dba', '31.5hz', '63hz', '125hz', '250hz', '500hz', '1khz',
+                         '2khz', '4khz', '8khz']
         for entry in tabledata:
-            self.importTable.insertRow(0)
-            self.importTable.setItem(0,1,QtWidgets.QTableWidgetItem(entry[1]))
-            chkBoxItem = QtWidgets.QTableWidgetItem()
-            chkBoxItem.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            chkBoxItem.setCheckState(QtCore.Qt.Unchecked)
-            self.importTable.setItem(0,0,chkBoxItem)# access table and
+            i = 1
+            self.importTable.insertRow(self.importTable.rowCount())
+
+            for item in entry:
+                if i >= self.importTable.columnCount(): #check to see if tehre are adequate columns
+                    self.importTable.insertColumn(i)                    #insert if not enough
+                    hdrcombobox = QtWidgets.QComboBox()
+                    for t in headeroptions:
+                        hdrcombobox.addItem(t)
+                    self.importTable.setCellWidget(0,i,hdrcombobox)
+                self.importTable.setItem(self.importTable.rowCount() - 1, i, QtWidgets.QTableWidgetItem(str(item,'utf-8')))
+                chkBoxItem = QtWidgets.QTableWidgetItem()
+                chkBoxItem.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                chkBoxItem.setCheckState(QtCore.Qt.Unchecked)
+                self.importTable.setItem(self.importTable.rowCount() - 1, 0, chkBoxItem)# access table and
+                i += 1
 
     def file_open(self):
         name,_ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File Menu","","Comma Delimited (*.csv)")
         print('file to open is ',name)
-        data = genfromtxt(name,delimiter=',')
+        data = genfromtxt(name,delimiter=',',dtype = None).tolist()
         print('data imported successfully')
         return data
+
+    def run_import(self):
+        print("running import")
+
+    def adjustStartRow(self):
+        print("adjusting start row")
 
 # main body of program initialised on startup
 def main():
