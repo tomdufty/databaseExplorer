@@ -9,6 +9,7 @@ import dbmanager
 
 TABLESIZE = 21
 
+
 class Application(QtWidgets.QMainWindow, mainWindow.Ui_MainWindow):
     #
     def __init__(self):
@@ -19,16 +20,29 @@ class Application(QtWidgets.QMainWindow, mainWindow.Ui_MainWindow):
         self.actionFrom_CSV.triggered.connect(self.run_import_from_csv)
 
     def run_search_query(self):
-        searchquery = dbmanager.run_search_query(self.textEdit.toPlainText())
+        searchquery = dbmanager.run_search_query(self.searchField.toPlainText())
+        self.update_table(searchquery)
+
 
     def run_import_from_csv(self):
-        importgui = importWin(self)
+        importgui = ImportWin(self)
         importgui.show()
 
+    def update_table(self, entrys):
+        print("updating table")
+        self.MainList.setRowCount(0)
+        for entry in entrys:
+            self.MainList.insertRow(0)
+            self.MainList.setItem(0,1,QtWidgets.QTableWidgetItem(entry[1]))
+            chkBoxItem = QtWidgets.QTableWidgetItem()
+            chkBoxItem.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            chkBoxItem.setCheckState(QtCore.Qt.Unchecked)
+            self.MainList.setItem(0,0,chkBoxItem)# access table and
 
-class importWin(QtWidgets.QMainWindow, importWindow_ui.Ui_Form):
+
+class ImportWin(QtWidgets.QMainWindow, importWindow_ui.Ui_Form):
     def __init__(self, parent=None):
-        super(importWin, self).__init__(parent)
+        super(ImportWin, self).__init__(parent)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setupUi(self)
         print("importing data")
@@ -37,8 +51,8 @@ class importWin(QtWidgets.QMainWindow, importWindow_ui.Ui_Form):
 
     def populate_table(self,tabledata):
         print("populating table")
-        self.importTable.insertColumn(0) #add first column for checkboxes
-        self.importTable.insertRow(0)   #add first row for comboboxes
+        self.importTable.insertColumn(0)  # add first column for checkboxes
+        self.importTable.insertRow(0)   # add first row for comboboxes
         headeroptions = ['','Description','Category','Sub-Category','Quality','Group','Model','Reference','Parameter',
                          'Comments', 'Approved', 'dba', '31.5hz', '63hz', '125hz', '250hz', '500hz', '1khz',
                          '2khz', '4khz', '8khz']
